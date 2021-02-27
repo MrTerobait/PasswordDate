@@ -26,24 +26,25 @@
         </Style>
     </Window.Resources>
     <Grid Background="#ffa200" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible">
-        <ScrollViewer>
-            <StackPanel Margin="0,30,0,30">
-                <Button x:Name="MainButton" Height="50" Width="500" Margin="0,10,0,50" VerticalAlignment="Center" HorizontalAlignment="Center" Click="MainButton_Click">
-                    Создать запись
-                </Button>
-                <Grid Margin="30,0,30,0">
-                    <DataGrid x:Name="RecordingDisplayer" BorderBrush="White" BorderThickness="3" AutoGenerateColumns="False" IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Дата" Width="200" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = CreationDate}"/>
-                            <DataGridTextColumn Header="Запись" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Name}"/>
-                            <DataGridTextColumn Header="Пароль" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Password}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-        <Grid x:Name="NewRecordingEditor" Background="#96db40" Visibility="Collapsed" VerticalAlignment="Bottom">
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button x:Name="MainButton" Grid.Row="0" Height="50" Width="500" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="MainButton_Click">
+            Создать запись
+        </Button>
+        <Border x:Name="DynamicPartOfWindow" Grid.Row="1" Padding="30,0,30,30">
+            <ScrollViewer Background="AntiqueWhite">
+                <DataGrid x:Name="RecordingDisplayer" BorderBrush="White" BorderThickness="3" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата" Width="200" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = CreationDate}"/>
+                        <DataGridTextColumn Header="Запись" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Name}"/>
+                        <DataGridTextColumn Header="Пароль" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Password}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+        </Border>
+        <Grid x:Name="NewRecordingEditor" Grid.Row="1" Background="#96db40" Visibility="Collapsed">
         </Grid>
     </Grid>
 </Window>

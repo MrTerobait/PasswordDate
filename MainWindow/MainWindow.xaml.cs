@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Media.Animation;
 using Model;
 
 namespace MainWindow
@@ -42,20 +32,26 @@ namespace MainWindow
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
         {
-            if (mainButtonCondition == ButtonConditions.Add)
-            {
-                NewRecordingEditor.Visibility = Visibility.Visible;
-                recordingList.Add(new Recording("",""));
-                MainButton.Content = "Сохранить";
-                mainButtonCondition = ButtonConditions.Save;
-            }
-            else if (mainButtonCondition == ButtonConditions.Save)
-            {
-                NewRecordingEditor.Visibility = Visibility.Collapsed;
-                MainButton.Content = "Добавить";
-                mainButtonCondition = ButtonConditions.Add;
-            }
+            DynamicPartOfWindow.Child = NewRecordingEditor;
+            //if (mainButtonCondition == ButtonConditions.Add)
+            //{
+            //    NewRecordingEditor.Visibility = Visibility.Visible;
+            //    var animation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.5));
+            //    NewRecordingEditor.BeginAnimation(OpacityProperty, animation);
+            //    MainButton.Content = "Сохранить";
+            //    mainButtonCondition = ButtonConditions.Save;
+            //}
+            //else if (mainButtonCondition == ButtonConditions.Save)
+            //{
+            //    var animation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(1.5));
+            //    NewRecordingEditor.BeginAnimation(OpacityProperty, animation);
+            //    MainButton.Content = "Добавить";
+            //    mainButtonCondition = ButtonConditions.Add;
+            //}
         }
 
+        private void ChangeDisplayer(object firstDisplayer, object secondDisplayer)
+        {
+        }
     }
 }

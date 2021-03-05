@@ -10,7 +10,7 @@ namespace Model
         public Recording(string name, string password)
         {
             Name = name;
-            Password = password;
+            UpdatePassword(password);
         }
         public void UpdatePassword(string password)
         {

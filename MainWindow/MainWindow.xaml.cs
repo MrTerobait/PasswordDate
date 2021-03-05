@@ -10,16 +10,10 @@ namespace MainWindow
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    enum ButtonConditions
-    {
-        Add,
-        Save
-    }
     public partial class DataWindow : Window
     {
         private BindingList<Recording> recordingList = new BindingList<Recording>();
         private BindingList<Recording> deletedRecorgingHistory = new BindingList<Recording>();
-        private ButtonConditions mainButtonCondition = ButtonConditions.Add;
         public DataWindow()
         {
             InitializeComponent();
@@ -32,26 +26,37 @@ namespace MainWindow
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
         {
-            DynamicPartOfWindow.Child = NewRecordingEditor;
-            //if (mainButtonCondition == ButtonConditions.Add)
-            //{
-            //    NewRecordingEditor.Visibility = Visibility.Visible;
-            //    var animation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(1.5));
-            //    NewRecordingEditor.BeginAnimation(OpacityProperty, animation);
-            //    MainButton.Content = "Сохранить";
-            //    mainButtonCondition = ButtonConditions.Save;
-            //}
-            //else if (mainButtonCondition == ButtonConditions.Save)
-            //{
-            //    var animation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(1.5));
-            //    NewRecordingEditor.BeginAnimation(OpacityProperty, animation);
-            //    MainButton.Content = "Добавить";
-            //    mainButtonCondition = ButtonConditions.Add;
-            //}
+            OpenEditor();
         }
 
-        private void ChangeDisplayer(object firstDisplayer, object secondDisplayer)
+        private void CreateNewRecording(object sender, RoutedEventArgs e)
         {
+            Recording recording = new Recording(NameInput.Text, PasswordInput.Text);
+            for (int i = 0; i < recordingList.Count; i++)
+            {
+                if (recordingList[i].Name == recording.Name)
+                {
+                    MessageBox.Show("Запись с таким же названием уже существует");
+                    return;
+                }
+            }
+            CloseEditor();
+            recordingList.Add(recording);
+        }
+        private void OpenEditor()
+        {
+            var animation = new DoubleAnimation(5, 105, TimeSpan.FromSeconds(0.5));
+            Editor.BeginAnimation(HeightProperty, animation);
+        }
+        private void CloseEditor()
+        {
+            var animation = new DoubleAnimation(105, 5, TimeSpan.FromSeconds(0.5));
+            Editor.BeginAnimation(HeightProperty, animation);
+        }
+
+        private void MakeRandomTextInPasswordInput(object sender, RoutedEventArgs e)
+        {
+            PasswordInput.Text = Tools.GeneratePassword(10, true, true);
         }
     }
 }

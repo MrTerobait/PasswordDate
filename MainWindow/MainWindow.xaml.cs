@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Controls;
+using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
@@ -26,7 +26,7 @@ namespace MainWindow
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenEditor();
+            OpenNewRecordingEditor();
         }
 
         private void CreateNewRecording(object sender, RoutedEventArgs e)
@@ -40,21 +40,21 @@ namespace MainWindow
                     return;
                 }
             }
-            CloseEditor();
             recordingList.Add(recording);
         }
-        private void OpenEditor()
+        private void OpenNewRecordingEditor()
         {
-            var animation = new DoubleAnimation(5, 105, TimeSpan.FromSeconds(0.5));
-            Editor.BeginAnimation(HeightProperty, animation);
+            NameInput.Text = "Название записи";
+            PasswordInput.Text = "Пароль";
+            var animation = new DoubleAnimation(5, 80, TimeSpan.FromSeconds(0.5));
+            NewRecordingEditor.BeginAnimation(HeightProperty, animation);
         }
-        private void CloseEditor()
+        private void CloseNewRecordingEditor(object sender, RoutedEventArgs e)
         {
-            var animation = new DoubleAnimation(105, 5, TimeSpan.FromSeconds(0.5));
-            Editor.BeginAnimation(HeightProperty, animation);
+            var animation = new DoubleAnimation(80, 5, TimeSpan.FromSeconds(0.5));
+            NewRecordingEditor.BeginAnimation(HeightProperty, animation);
         }
-
-        private void MakeRandomTextInPasswordInput(object sender, RoutedEventArgs e)
+        private void GeneratorPasswordButton_Click(object sender, RoutedEventArgs e)
         {
             PasswordInput.Text = Tools.GeneratePassword(10, true, true);
         }

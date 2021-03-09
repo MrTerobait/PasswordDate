@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Model;
 
 namespace MainWindow.Views
 {
     /// <summary>
     /// Interaction logic for PasswordGenerator.xaml
     /// </summary>
-    public partial class PasswordGenerator : UserControl
+    public partial class PasswordGenerator : Window
     {
         public PasswordGenerator()
         {
             InitializeComponent();
+        }
+
+        private void PasswordGeneratorButton_Click(object sender, RoutedEventArgs e)
+        {
+            int amountSymbols = (int)AmountSymbolsSlider.Value;
+            bool isRemoveCapitalLetters = (bool)IsRemoveCapitalLettersCheckBox.IsChecked;
+            bool isRemoveSigns = (bool)IsRemoveSignsCheckBox.IsChecked;
+            PasswordField.Text = Tools.GeneratePassword(amountSymbols, !isRemoveCapitalLetters, !isRemoveSigns);
+        }
+
+        private void AmountSymbolsSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            AmountSymbolsField.Content = $"Количество символов: {AmountSymbolsSlider.Value}";
         }
     }
 }

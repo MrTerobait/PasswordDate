@@ -50,13 +50,13 @@
                     <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="150"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Margin="10,20,10,20" BorderBrush="White" BorderThickness="2" Height="30">
-                    <TextBox x:Name="NameInput" Text="Название записи" 
+                <Border Grid.Column="0" Margin="10,21,10,20" BorderBrush="White" BorderThickness="2" Height="31">
+                    <TextBox x:Name="NameField" Text="Название записи" MaxLength="50"
                              Margin="0,4,0,0" TextAlignment="Center" Foreground="DarkCyan" FontSize="14" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"/>
                 </Border>
-                <Border Grid.Column="1" Margin="10,20,10,20" BorderBrush="White" BorderThickness="2" Height="30">
-                    <TextBox x:Name="PasswordInput" Text="Пароль" 
-                             Margin="0,4,0,0" TextAlignment="Center" Foreground="DarkCyan" FontSize="14" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}" />
+                <Border Grid.Column="1" Margin="10,21,10,20"  BorderBrush="White" BorderThickness="2" Height="31">
+                    <TextBox x:Name="PasswordField" Text="Пароль" MaxLength="50"
+                             Margin="0,4,0,0" TextAlignment="Center" Foreground="DarkCyan" FontSize="14" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"/>
                 </Border>
                 <Button Grid.Column="2" Margin="10,20,10,20" Click="CreateNewRecording">
                     Сохранить
@@ -83,14 +83,14 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Grid.Row="1" Margin="30,0,10,0" VerticalAlignment="Top" >
+            <Button x:Name="PasswordGeneratorButton" Grid.Column="0" Margin="30,0,10,0" VerticalAlignment="Top" Click="PasswordGeneratorButton_Click" >
                 Генератор пароля
             </Button>
-            <Button Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" >
+            <Button x:Name="SettersButton" Grid.Column="1" VerticalAlignment="Top" >
                 Настройки
             </Button>
-            <Button Grid.Column="2" Grid.Row="1" Margin="10,0,30,0" VerticalAlignment="Top" >
-                История
+            <Button x:Name="BasketButton" Grid.Column="2" Margin="10,0,30,0" VerticalAlignment="Top" >
+                Корзина
             </Button>
         </Grid>
     </Grid>

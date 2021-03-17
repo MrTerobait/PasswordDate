@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:MainWindow"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="App" Height="450" Width="800" MinWidth="800" Loaded="Window_Loaded">
+        Title="App" Height="450" Width="800" MinWidth="800" Loaded="Window_Loaded" Closed="Window_Closed">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="FontSize"  Value="14"/>
@@ -25,6 +25,9 @@
             <Setter Property="BorderBrush" Value="White"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="Height" Value="35"/>
+        </Style>
         <Style TargetType="TextBox">
             <Setter Property="FontSize"  Value="14"/>
             <Setter Property="Foreground" Value="DarkCyan"/>
@@ -33,39 +36,18 @@
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
     </Window.Resources>
-    <Grid Background="#ffa200" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible">
+    <Grid x:Name="MainWindowDisplayer" Background="#ffa200" materialDesign:ScrollBarAssist.ButtonsVisibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Height="50" FontSize="20" Width="500" Click="OpenNewRecordingEditor" HorizontalAlignment="Center" VerticalAlignment="Center" >
+        <Button Grid.Row="0" Height="50" FontSize="20" Width="500" Click="OpenNewRecordingEditor" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" >
             Создать запись
         </Button>
-        <Border x:Name="RecordingEditorDisplayer" Grid.Row="0" Background="#96db40" VerticalAlignment="Top" BorderThickness="0 0 0 5" BorderBrush="Black" Height="5">
-            <!--<Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="150"/>
-                </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Margin="10,21,10,20" BorderBrush="White" BorderThickness="2" Height="31">
-                    <TextBox x:Name="NameField" Text="Название записи" MaxLength="50"
-                             Margin="0,4,0,0" TextAlignment="Center" Foreground="DarkCyan" FontSize="14" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"/>
-                </Border>
-                <Border Grid.Column="1" Margin="10,21,10,20"  BorderBrush="White" BorderThickness="2" Height="31">
-                    <TextBox x:Name="PasswordField" Text="Пароль" MaxLength="50"
-                             Margin="0,4,0,0" TextAlignment="Center" Foreground="DarkCyan" FontSize="14" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"/>
-                </Border>
-                <Button Grid.Column="2" Margin="10,20,10,20" Click="CreateNewRecording">
-                    Сохранить
-                </Button>
-                <Button Grid.Column="3" Margin="10,20,10,20" Click="CloseNewRecordingEditor">
-                    Закрыть
-                </Button>
-            </Grid>-->
-        </Border>
+        <Border x:Name="RecordingEditorDisplayer" Grid.Row="0" Background="#96db40" 
+                VerticalAlignment="Top" BorderThickness="0 0 0 5" BorderBrush="Black" Height="5"/>
         <Border Grid.Row="1" Padding="30,0,30,20">
             <ScrollViewer Background="AntiqueWhite">
                 <Grid>
@@ -73,7 +55,7 @@
                         <ColumnDefinition  Width="40"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid x:Name="RecordingDisplayer" BorderBrush="White" BorderThickness="3" AutoGenerateColumns="False"
+                    <DataGrid x:Name="RecordingsDisplayer" BorderBrush="White" BorderThickness="3" AutoGenerateColumns="False"
                           IsReadOnly="True" IsHitTestVisible="False" Grid.Column="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Дата" Width="200" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = CreationDate}"/>

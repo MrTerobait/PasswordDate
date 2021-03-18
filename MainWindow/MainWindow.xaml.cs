@@ -9,10 +9,10 @@ using System.Windows.Media;
 
 namespace MainWindow
 {
-    enum ButtonCondition
+    enum ButtonConditions
     {
-        Opened,
-        Closure
+        Opening,
+        Closing
     }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -20,12 +20,7 @@ namespace MainWindow
     public partial class DataWindow : Window
     {
         private BindingList<Recording> recordingList = new BindingList<Recording>();
-        private BindingList<Recording> deletedRecorgingList = new BindingList<Recording>();
-        enum OpeningList
-        {
-            RecordingList,
-            DeletedRecordingList
-        }
+        private BindingList<Recording> deletedRecordingList = new BindingList<Recording>();
         private RecordingEditor recordingEditor;
         private int chosenRecordingNumber = -1;
         public DataWindow()
@@ -46,17 +41,39 @@ namespace MainWindow
         {
             RecordingButtonDisplayer.Children.Clear();
             RecordingButtonDisplayer.Children.Add(Indent);
-            for (int i = 0; i < recordingList.Count; i++)
+            if(BasketButtonCondition == ButtonConditions.Opening)
             {
-                var recordingButton = AddRecordingButton();
-                RecordingButtonDisplayer.Children.Add(recordingButton);
+                for (int i = 0; i < recordingList.Count; i++)
+                {
+                    var recordingButton = AddRecordingButton();
+                    recordingButton.Click += OpenChosenRecordingEditor;
+                    RecordingButtonDisplayer.Children.Add(recordingButton);
+                }
+            }
+            else if(BasketButtonCondition == ButtonConditions.Closing)
+            {
+                for (int i = 0; i < deletedRecordingList.Count; i++)
+                {
+                    var recordingButton = AddRecordingButton();
+                    recordingButton.Click += OpenChosenDeletedRecording;
+                    RecordingButtonDisplayer.Children.Add(recordingButton);
+                }
             }
         }
         private void ResetRecordingButtons(object sender, ListChangedEventArgs e)
         {
             if (e.ListChangedType == ListChangedType.ItemAdded)
             {
-                RecordingButtonDisplayer.Children.Add(AddRecordingButton());
+                var recordingButton = AddRecordingButton();
+                if (BasketButtonCondition == ButtonConditions.Opening)
+                {
+                    recordingButton.Click += OpenChosenRecordingEditor;
+                }
+                else if(BasketButtonCondition == ButtonConditions.Closing)
+                {
+                    recordingButton.Click += OpenChosenDeletedRecording;
+                }
+                RecordingButtonDisplayer.Children.Add(recordingButton);
             }
             else if(e.ListChangedType == ListChangedType.ItemDeleted)
             {
@@ -73,7 +90,6 @@ namespace MainWindow
                 Foreground = Brushes.White,
                 Height = 35
             };
-            recordingButton.Click += OpenChosenRecordingEditor;
             return recordingButton;
         }
 
@@ -136,7 +152,7 @@ namespace MainWindow
         }
         private void DeleteRecordingInRecordingList()
         {
-            deletedRecorgingList.Add(recordingList[chosenRecordingNumber]);
+            deletedRecordingList.Add(recordingList[chosenRecordingNumber]);
             recordingList.RemoveAt(chosenRecordingNumber);
         }
         
@@ -264,7 +280,7 @@ namespace MainWindow
                 Close();
             }
         }
-        private abstract class RecordingEditor
+        public abstract class RecordingEditor
         {
             public Grid body = new Grid();
             private int countControls;
@@ -316,17 +332,17 @@ namespace MainWindow
 
 
         private PasswordGenerator passwordGenerator;
-        private ButtonCondition PasswordGeneratorButtonCondition = ButtonCondition.Closure;
+        private ButtonConditions PasswordGeneratorButtonCondition = ButtonConditions.Opening;
         private void PasswordGeneratorButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PasswordGeneratorButtonCondition == ButtonCondition.Closure)
+            if (PasswordGeneratorButtonCondition == ButtonConditions.Opening)
             {
                 passwordGenerator = new PasswordGenerator();
                 passwordGenerator.Closed += PasswordGenerator_Closed;
                 passwordGenerator.Show();
                 PasswordGeneratorButton.Content = "Закрыть генератор пароля";
             }
-            else if (PasswordGeneratorButtonCondition == ButtonCondition.Opened)
+            else if (PasswordGeneratorButtonCondition == ButtonConditions.Closing)
             {
                 passwordGenerator.Closed -= PasswordGenerator_Closed;
                 passwordGenerator.Close();
@@ -340,15 +356,37 @@ namespace MainWindow
             ChangeButtonCondition(ref PasswordGeneratorButtonCondition);
         }
 
-        private void ChangeButtonCondition(ref ButtonCondition button)
+        private ButtonConditions BasketButtonCondition = ButtonConditions.Opening;
+
+
+        private void BasketButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (BasketButtonCondition == ButtonConditions.Opening)
+            {
+                RecordingsDisplayer.ItemsSource = deletedRecordingList;
+                BasketButton.Content = "Закрыть корзину";
+            }
+            if (BasketButtonCondition == ButtonConditions.Closing)
+            {
+                RecordingsDisplayer.ItemsSource = recordingList;
+                BasketButton.Content = "Корзина";
+            }
+            ChangeButtonCondition(ref BasketButtonCondition);
+            SetRecordingButtons();
+        }
+        private void OpenChosenDeletedRecording(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ChangeButtonCondition(ref ButtonConditions button)
         {
             switch (button)
             {
-                case ButtonCondition.Opened:
-                    button = ButtonCondition.Closure;
+                case ButtonConditions.Opening:
+                    button = ButtonConditions.Closing;
                     return;
-                case ButtonCondition.Closure:
-                    button = ButtonCondition.Opened;
+                case ButtonConditions.Closing:
+                    button = ButtonConditions.Opening;
                     return;
             }
         }

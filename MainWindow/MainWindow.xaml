@@ -42,7 +42,7 @@
             <RowDefinition/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Height="50" FontSize="20" Width="500" Click="OpenNewRecordingEditor" 
+        <Button x:Name="MainButtonDisplayer" Grid.Row="0" Height="50" FontSize="20" Width="500" Click="MainButton_Click" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" >
             Создать запись
         </Button>

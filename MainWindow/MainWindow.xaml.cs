@@ -235,7 +235,7 @@ namespace MainWindow
             var currentRecording = recordingList[recordingNumber];
             if (editorCondition.Recording == null)
             {
-                var index = DoesRecordingHaveInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
+                var index = IsRecordingInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
                 if (index == -1)
                 {
                     basket.Add(currentRecording);
@@ -249,7 +249,7 @@ namespace MainWindow
             }
             else if(currentRecording.Password != editorCondition.Recording.Password)
             {
-                var index = DoesRecordingHaveInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
+                var index = IsRecordingInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
                 if (index == -1)
                 {
                     basket.Add(currentRecording);
@@ -264,7 +264,49 @@ namespace MainWindow
         }
         private void WriteOffChangesFromCRIBEditor(int recordingNumber)
         {
-
+            var editorCondition = recordingEditor as ChosenRecordingInBasketEditor;
+            if (editorCondition.ChosenRecording == null)
+            {
+                basket.RemoveAt(recordingNumber);
+                RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
+            }
+            else if(editorCondition.IsRestoreRecordingButton == true)
+            {
+                var index = IsRecordingInCurrentRecordingList(editorCondition.ChosenRecording.Name, CurrentDisplayingListTypes.RecordingList);
+                if (index == -1)
+                {
+                    basket.RemoveAt(recordingNumber);
+                    RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
+                    InsertRecordingInRecordingList(editorCondition.ChosenRecording);
+                }
+                else
+                {
+                    if(MessageBox.Show("Запись с таким названием уже существует!\nЗаменить запись из корзины на текущую?\n(Текущая запись удалится на всегда!)"
+                        , $"{editorCondition.ChosenRecording.Name}", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        basket.RemoveAt(recordingNumber);
+                        RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
+                        recordingList.RemoveAt(index);
+                        InsertRecordingInRecordingList(editorCondition.ChosenRecording);
+                    }
+                }
+            }
+            if (basket.Count == 0)
+            {
+                ToggleCurrentDisplayingList(null,null);
+            }
+        }
+        private void InsertRecordingInRecordingList(Recording recording)
+        {
+            for (int i = 0; i < recordingList.Count; i++)
+            {
+                if (DateTime.Compare(recording.CreationDate, recordingList[i].CreationDate) == -1 || DateTime.Compare(recording.CreationDate, recordingList[i].CreationDate) == 0)
+                {
+                    recordingList.Insert(i, recording);
+                    return;
+                }
+            }
+            recordingList.Add(recording);
         }
 
         private void OpenNewRecordingEditor()
@@ -278,7 +320,7 @@ namespace MainWindow
         }
         private void AddNewRecording(Recording newRecording)
         {
-            if (DoesRecordingHaveInCurrentRecordingList(newRecording.Name, CurrentDisplayingListTypes.RecordingList) != -1)
+            if (IsRecordingInCurrentRecordingList(newRecording.Name, CurrentDisplayingListTypes.RecordingList) != -1)
             {
                 MessageBox.Show("Запись с таким же названием уже существует");
                 return;
@@ -294,7 +336,7 @@ namespace MainWindow
             if (IsRecordingEditorDisplayerOpen) { CloseRecordingEditorDisplayer(); }
         }
 
-        private int DoesRecordingHaveInCurrentRecordingList(string name, CurrentDisplayingListTypes listType)
+        private int IsRecordingInCurrentRecordingList(string name, CurrentDisplayingListTypes listType)
         {
             switch (listType)
             {
@@ -341,93 +383,7 @@ namespace MainWindow
             //    CloseRecordingEditorDisplayer();
             //}
         }
-        //private void OpenChosenRecordingInBasketEditor(object sender, RoutedEventArgs e)
-        //{
-        //    if (chosenFromBasketRecordingNumber != -1)
-        //    {
-        //        RecordingButtonDisplayer.Children[chosenFromBasketRecordingNumber + 1].SetValue(ForegroundProperty, Brushes.White);
-        //    }
-        //    var chosenButton = sender as Button;
-        //    int recordingIndex = RecordingButtonDisplayer.Children.IndexOf(chosenButton) - 1; //zero element is indent;
-        //    if (recordingIndex == chosenFromBasketRecordingNumber)
-        //    {
-        //        CloseChosenRecordingInBasketEditor();
-        //        IsRecordingEditorDisplayerOpen = false;
-        //        return;
-        //    }
-        //    chosenFromBasketRecordingNumber = recordingIndex;
-        //    Recording chosenRecording = basket[recordingIndex];
-        //    recordingEditor = new ChosenRecordingInBasketEditor(ref chosenRecording);
-        //    recordingEditor.IsEndWork += CloseChosenRecordingInBasketEditor;
-        //    chosenButton.Foreground = Brushes.Red;
-        //    RecordingEditorDisplayer.Child = recordingEditor.body;
-        //    if (!IsRecordingEditorDisplayerOpen) { OpenRecordingEditorDisplayer(); }
-        //}
-        //private void CloseChosenRecordingInBasketEditor()
-        //{
-        //    ChosenRecordingInBasketEditor currentEditorState = (ChosenRecordingInBasketEditor)recordingEditor;
-        //    if (currentEditorState.ChosenRecording == null)
-        //    {
-        //        DeleteRecordingInBasket();
-        //    }
-        //    else if(currentEditorState.IsRestoreRecordingButton == true)
-        //    {
-        //        RestoreRecordingFromBasket(currentEditorState.ChosenRecording);
-        //    }
-        //    if (IsRecordingEditorDisplayerOpen) { CloseRecordingEditorDisplayer(); }
-        //    chosenFromBasketRecordingNumber = -1;
-        //}
-        //private void DeleteRecordingInBasket()
-        //{
-        //    basket.RemoveAt(chosenFromBasketRecordingNumber);
-        //    if (basket.Count == 0)
-        //    {
-        //        BasketButton_Click(null, null);
-        //    }
-        //}
-        //private void RestoreRecordingFromBasket(Recording recording)
-        //{
-        //    for (int i = 0; i < recordingList.Count; i++)
-        //    {
-        //        if (recordingList[i].Name == basket[chosenFromBasketRecordingNumber].Name)
-        //        {
-        //            if (MessageBox.Show("Запись с таким названием уже существует!\nЗаменить запись из корзины на текущую?\n(Текущая запись удалится на всегда!)"
-        //                , $"{recordingList[i].Name}", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-        //            {
-        //                recordingList.RemoveAt(i);
-        //                InsertRecordingInRecordingList();
-        //                break;
-        //            }
-        //            else
-        //            {
-        //                return;
-        //            }
-        //        }
-        //        else if (i == recordingList.Count-1)
-        //        {
-        //            InsertRecordingInRecordingList();
-        //        }
-        //    }
-        //    if (basket.Count == 0)
-        //    {
-        //        BasketButton_Click(null, null);
-        //    }
-        //}
 
-        //private void InsertRecordingInRecordingList()
-        //{
-        //    for (int i = 0; i < recordingList.Count; i++)
-        //    {
-        //        if (DateTime.Compare(basket[chosenFromBasketRecordingNumber].CreationDate, recordingList[i].CreationDate) == -1 || DateTime.Compare(basket[chosenFromBasketRecordingNumber].CreationDate, recordingList[i].CreationDate) == 0)
-        //        {
-        //            recordingList.Insert(i, basket[chosenFromBasketRecordingNumber]);
-        //            basket.RemoveAt(chosenFromBasketRecordingNumber);
-        //            return;
-        //        }
-        //    }
-        //    recordingList.Add(basket[chosenFromBasketRecordingNumber]);
-        //    basket.RemoveAt(chosenFromBasketRecordingNumber);
-        //}
 
         private bool IsRecordingEditorDisplayerOpen = false;
         private void OpenRecordingEditorDisplayer()

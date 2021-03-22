@@ -2,7 +2,7 @@
 
 namespace Model
 {
-    class Recording
+    public class Recording
     {
         public string Name { get; }
         public DateTime CreationDate { get; private set; }

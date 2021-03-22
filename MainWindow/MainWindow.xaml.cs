@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using Model;
 using System.Windows.Controls;
-using System.Windows.Media;
+using System.Windows.Media; 
 
 namespace MainWindow
 {
@@ -24,6 +24,9 @@ namespace MainWindow
     /// </summary>
     public partial class DataWindow : Window
     {
+        private readonly string recordingListPath = $"{Environment.CurrentDirectory}\\recordingList.json";
+        private readonly string basketPath = $"{Environment.CurrentDirectory}\\basket.json";
+        private FileIOServices fileIOServices;
         private BindingList<Recording> recordingList = new BindingList<Recording>();
         private BindingList<Recording> basket = new BindingList<Recording>();
         private RecordingEditor recordingEditor;
@@ -36,12 +39,35 @@ namespace MainWindow
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            fileIOServices = new FileIOServices(recordingListPath, basketPath);
+            try
+            {
+                basket = fileIOServices.LoadDataForBasket();
+                recordingList = fileIOServices.LoadDataForRecordingList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Close();
+            }
             RecordingsDisplayer.ItemsSource = recordingList;
             SetRecordingButtons();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             passwordGenerator?.Close();
+            SaveRecordingsInFile();
+        }
+        private void SaveRecordingsInFile()
+        {
+            try
+            {
+                fileIOServices.SaveData(recordingList, basket);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
@@ -55,6 +81,7 @@ namespace MainWindow
                     if (MessageBox.Show("Вы хотите очистить корзину?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
                         basket.Clear();
+                        SaveRecordingsInFile();
                         ToggleCurrentDisplayingList(null, null);
                     }
                     break;
@@ -246,6 +273,7 @@ namespace MainWindow
                 }
                 RecordingButtonDisplayer.Children.RemoveAt(recordingNumber+1);
                 recordingList.RemoveAt(recordingNumber);
+                SaveRecordingsInFile();
             }
             else if(currentRecording.Password != editorCondition.Recording.Password)
             {
@@ -260,6 +288,7 @@ namespace MainWindow
                 }
                 recordingList.RemoveAt(recordingNumber);
                 recordingList.Add(editorCondition.Recording);
+                SaveRecordingsInFile();
             }
         }
         private void WriteOffChangesFromCRIBEditor(int recordingNumber)
@@ -269,6 +298,7 @@ namespace MainWindow
             {
                 basket.RemoveAt(recordingNumber);
                 RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
+                SaveRecordingsInFile();
             }
             else if(editorCondition.IsRestoreRecordingButton == true)
             {
@@ -278,6 +308,7 @@ namespace MainWindow
                     basket.RemoveAt(recordingNumber);
                     RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
                     InsertRecordingInRecordingList(editorCondition.ChosenRecording);
+                    SaveRecordingsInFile();
                 }
                 else
                 {
@@ -288,6 +319,7 @@ namespace MainWindow
                         RecordingButtonDisplayer.Children.RemoveAt(recordingNumber + 1);
                         recordingList.RemoveAt(index);
                         InsertRecordingInRecordingList(editorCondition.ChosenRecording);
+                        SaveRecordingsInFile();
                     }
                 }
             }
@@ -326,6 +358,7 @@ namespace MainWindow
                 return;
             }
             recordingList.Add(newRecording);
+            SaveRecordingsInFile();
             var button = AddRecordingButton();
             button.Click += RecordingButton_Click;
             RecordingButtonDisplayer.Children.Add(button);
@@ -605,6 +638,12 @@ namespace MainWindow
             ChangeButtonCondition(ref PasswordGeneratorButtonCondition);
         }
 
+
+        private ButtonConditions SettersButtonCondition = ButtonConditions.Opening;
+        private void SettersButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
 
         private void ChangeButtonCondition(ref ButtonConditions button)
         {

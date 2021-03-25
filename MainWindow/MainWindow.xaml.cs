@@ -1,11 +1,9 @@
 ﻿using System;
-using MainWindow.Views;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
-using Model;
 using System.Windows.Controls;
-using System.Windows.Media; 
+using System.Windows.Media;
 
 namespace MainWindow
 {
@@ -26,6 +24,7 @@ namespace MainWindow
     {
         private readonly string recordingListPath = $"{Environment.CurrentDirectory}\\recordingList.json";
         private readonly string basketPath = $"{Environment.CurrentDirectory}\\basket.json";
+        private Setters setters;
         private FileIOServices fileIOServices;
         private BindingList<Recording> recordingList = new BindingList<Recording>();
         private BindingList<Recording> basket = new BindingList<Recording>();
@@ -39,6 +38,7 @@ namespace MainWindow
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            setters = new Setters();
             fileIOServices = new FileIOServices(recordingListPath, basketPath);
             try
             {
@@ -52,11 +52,11 @@ namespace MainWindow
             }
             RecordingsDisplayer.ItemsSource = recordingList;
             SetRecordingButtons();
+            MarkOldRecordingsInRecordingList();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             passwordGenerator?.Close();
-            SaveRecordingsInFile();
         }
         private void SaveRecordingsInFile()
         {
@@ -67,6 +67,20 @@ namespace MainWindow
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+        private void MarkOldRecordingsInRecordingList()
+        {
+            RecordingsDisplayer.SelectedCells.Clear();
+            foreach (var item in RecordingsDisplayer.Items)
+            {
+                var recording = item as Recording;
+                var days = DateTime.Now - recording.CreationDate;
+                if (days.Days >= setters.DaysBeforeRecordingAging)
+                {
+                    RecordingsDisplayer.CurrentCell = new DataGridCellInfo(item, RecordingsDisplayer.Columns[0]);
+                    RecordingsDisplayer.SelectedCells.Add(RecordingsDisplayer.CurrentCell);
+                }
             }
         }
 
@@ -97,12 +111,15 @@ namespace MainWindow
                     BasketButton.Content = "Закрыть корзину";
                     RecordingsDisplayer.ItemsSource = basket;
                     MainButtonDisplayer.Content = "Очистить корзину";
+                    CreationDateDisplayer.CellStyle = RecordingsDisplayer.FindResource("Default") as Style;
                     currentDisplayingList = CurrentDisplayingListTypes.Basket;
                     break;
                 case CurrentDisplayingListTypes.Basket:
                     BasketButton.Content = "Корзина";
                     MainButtonDisplayer.Content = "Создать запись";
                     RecordingsDisplayer.ItemsSource = recordingList;
+                    CreationDateDisplayer.CellStyle = RecordingsDisplayer.FindResource("CreationDate") as Style;
+                    MarkOldRecordingsInRecordingList();
                     currentDisplayingList = CurrentDisplayingListTypes.RecordingList;
                     break;
             }
@@ -265,30 +282,42 @@ namespace MainWindow
                 var index = IsRecordingInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
                 if (index == -1)
                 {
-                    basket.Add(currentRecording);
+                    basket.Insert(0, currentRecording);
+                    if (basket.Count > setters.BasketLimit)
+                    {
+                        basket.RemoveAt(basket.Count - 1);
+                    }                    
                 }
                 else
                 {
-                    basket[index] = currentRecording;
+                    basket.RemoveAt(index);
+                    basket.Insert(0, currentRecording);
                 }
                 RecordingButtonDisplayer.Children.RemoveAt(recordingNumber+1);
                 recordingList.RemoveAt(recordingNumber);
                 SaveRecordingsInFile();
+                MarkOldRecordingsInRecordingList();
             }
             else if(currentRecording.Password != editorCondition.Recording.Password)
             {
                 var index = IsRecordingInCurrentRecordingList(currentRecording.Name, CurrentDisplayingListTypes.Basket);
                 if (index == -1)
                 {
-                    basket.Add(currentRecording);
+                    basket.Insert(0, currentRecording);
+                    if (basket.Count > setters.BasketLimit)
+                    {
+                        basket.RemoveAt(basket.Count - 1);
+                    }
                 }
                 else
                 {
-                    basket[index] = currentRecording;
+                    basket.RemoveAt(index);
+                    basket.Insert(0, currentRecording);
                 }
                 recordingList.RemoveAt(recordingNumber);
                 recordingList.Add(editorCondition.Recording);
                 SaveRecordingsInFile();
+                MarkOldRecordingsInRecordingList();
             }
         }
         private void WriteOffChangesFromCRIBEditor(int recordingNumber)
@@ -395,28 +424,6 @@ namespace MainWindow
             return -1;
         }
 
-        private void BasketButton_Click(object sender, RoutedEventArgs e)
-        {
-            //if (BasketButtonCondition == ButtonConditions.Opening)
-            //{
-            //    if (IsBasketEmpty()) { return; }
-            //    RecordingsDisplayer.ItemsSource = basket;
-            //    BasketButton.Content = "Закрыть корзину";
-            //    MainButtonDisplayer.Content = "Очистить корзину";
-            //}
-            //else if (BasketButtonCondition == ButtonConditions.Closing)
-            //{
-            //    RecordingsDisplayer.ItemsSource = recordingList;
-            //    BasketButton.Content = "Корзина";
-            //    MainButtonDisplayer.Content = "Создать запись";
-            //}
-            //ChangeButtonCondition(ref BasketButtonCondition);
-            //if (IsRecordingEditorDisplayerOpen)
-            //{
-            //    CloseRecordingEditorDisplayer();
-            //}
-        }
-
 
         private bool IsRecordingEditorDisplayerOpen = false;
         private void OpenRecordingEditorDisplayer()
@@ -456,7 +463,7 @@ namespace MainWindow
             }
             private void AddRecording_Click(object sender, RoutedEventArgs e)
             {
-                Recording recording = new Recording(NameField.Text, PasswordField.Text);
+                Recording recording = new Recording(NameField.Text, PasswordField.Text, DateTime.Now);
                 RecordingIsReady.Invoke(recording);
                 NameField.Text = "Название записи";
                 PasswordField.Text = "Пароль";
@@ -491,7 +498,7 @@ namespace MainWindow
                 {
                     var name = _chosenRecording.Name;
                     _chosenRecording = null;
-                    _chosenRecording = new Recording(name, PasswordField.Text);
+                    _chosenRecording = new Recording(name, PasswordField.Text, DateTime.Now);
                     Close();
                 }
             }
@@ -502,7 +509,7 @@ namespace MainWindow
                     Clipboard.SetText(PasswordField.Text);
                     var name = _chosenRecording.Name;
                     _chosenRecording = null;
-                    _chosenRecording = new Recording(name, PasswordField.Text);
+                    _chosenRecording = new Recording(name, PasswordField.Text, DateTime.Now);
                     Close();
                 }
             }
@@ -561,7 +568,7 @@ namespace MainWindow
                 Close();
             }
         }
-        public abstract class RecordingEditor
+        private abstract class RecordingEditor
         {
             public Grid body = new Grid();
             private int countControls;
@@ -619,7 +626,11 @@ namespace MainWindow
         {
             if (PasswordGeneratorButtonCondition == ButtonConditions.Opening)
             {
-                passwordGenerator = new PasswordGenerator();
+                var defaultPasswordGeneratorValues = setters.PasswordGeneratorParams;
+                int amountSymbols = (int)defaultPasswordGeneratorValues[0];
+                bool isRemoveCapitalLetters = (bool)defaultPasswordGeneratorValues[1];
+                bool isRemoveSigns = (bool)defaultPasswordGeneratorValues[2];
+                passwordGenerator = new PasswordGenerator(amountSymbols, isRemoveCapitalLetters, isRemoveSigns);
                 passwordGenerator.Closed += PasswordGenerator_Closed;
                 passwordGenerator.Show();
                 PasswordGeneratorButton.Content = "Закрыть генератор пароля";
@@ -642,7 +653,15 @@ namespace MainWindow
         private ButtonConditions SettersButtonCondition = ButtonConditions.Opening;
         private void SettersButton_Click(object sender, RoutedEventArgs e)
         {
+            if (SettersButtonCondition == ButtonConditions.Opening)
+            {
 
+            }
+            else if(SettersButtonCondition == ButtonConditions.Closing)
+            {
+
+            }
+            ChangeButtonCondition(ref SettersButtonCondition);
         }
 
         private void ChangeButtonCondition(ref ButtonConditions button)

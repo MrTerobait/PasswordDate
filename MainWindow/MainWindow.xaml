@@ -28,6 +28,21 @@
         <Style TargetType="DataGridRow">
             <Setter Property="Height" Value="35"/>
         </Style>
+        <Style TargetType="DataGridCell" x:Key="Default" x:Name="Basket">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="DataGridCell" x:Key="CreationDate" BasedOn="{StaticResource Default}" x:Name="RecordingList">
+            <Setter Property="Foreground" Value="Green"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="#d92525"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="BorderBrush" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="TextBox">
             <Setter Property="FontSize"  Value="14"/>
             <Setter Property="Foreground" Value="DarkCyan"/>
@@ -56,18 +71,20 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <DataGrid x:Name="RecordingsDisplayer" BorderBrush="White" BorderThickness="3" AutoGenerateColumns="False"
-                          IsReadOnly="True" IsHitTestVisible="False" Grid.Column="1">
+                          IsReadOnly="True" IsHitTestVisible="False" Grid.Column="1" SelectionUnit="Cell">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Дата" Width="200" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = CreationDate}"/>
-                            <DataGridTextColumn Header="Запись" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Name}"/>
-                            <DataGridTextColumn Header="Пароль" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Password}"/>
+                            <DataGridTextColumn Header="Дата" Width="200" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = CreationDate}"
+                                                x:Name="CreationDateDisplayer" CellStyle="{StaticResource CreationDate}"/>
+                            <DataGridTextColumn Header="Запись" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Name}"
+                                                CellStyle="{StaticResource Default}"/>
+                            <DataGridTextColumn Header="Пароль" Width="*" CanUserResize="False" CanUserReorder="False" Binding="{Binding Path = Password}"
+                                                CellStyle="{StaticResource Default}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel x:Name="RecordingButtonDisplayer" Background="Black" Grid.Column="0">
-                        <Border Margin="0,31,0,0" x:Name="Indent"/>
+                        <Border Margin="0,30.6,0,0" x:Name="Indent"/>
                     </StackPanel>
                 </Grid>
-
             </ScrollViewer>
         </Border>
         <Grid Grid.Row="2">

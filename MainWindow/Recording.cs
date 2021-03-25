@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MainWindow
 {
     public class Recording
     {
         public string Name { get; }
+        public DateTime CreationDate { get; private set; }
         public string Password { get; private set; }
-        public DateTime CreationdDate { get; private set; }
-        public Recording(string name, string password)
+        public Recording(string name, string password, DateTime creationDate)
         {
-            Name = password;
-            UpdatePassword(password);
+            Name = name;
+            Password = password;
+            CreationDate = creationDate;
         }
         public void UpdatePassword(string password)
         {
             Password = password;
-            CreationdDate = DateTime.Now;
+            CreationDate = DateTime.Now;
         }
     }
 }

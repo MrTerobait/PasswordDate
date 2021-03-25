@@ -83,15 +83,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Recording.cs" />
-    <Compile Include="Model\Tools.cs" />
     <Compile Include="FileIOServices.cs" />
-    <Compile Include="Views\PasswordGenerator.xaml.cs">
-      <DependentUpon>PasswordGenerator.xaml</DependentUpon>
+    <Compile Include="PasswordGeneratorDisplayer.xaml.cs">
+      <DependentUpon>PasswordGeneratorDisplayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Recording.cs" />
+    <Compile Include="Setters.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,11 +101,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\PasswordGenerator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Settings.xaml">
+    <Page Include="PasswordGeneratorDisplayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

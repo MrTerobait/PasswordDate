@@ -175,10 +175,11 @@
                        MouseMove="SetterButton_MouseOver" MouseLeave="SetterButton_MouseLeave" MouseDown="SetterButton_Click"/>
 
                 <Button Content="Закрыть окно настроек" Style="{StaticResource SettersButton}" Grid.ColumnSpan="2" Grid.Row="6" Click="SettersButton_Click"/>
-                <Button Content="Сбросить все настройки" Style="{StaticResource SettersButton}" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6"/>
+                <Button Content="Сбросить все настройки" Style="{StaticResource SettersButton}" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="6" Click="ResetSettersButton_Click"/>
 
                 <Label x:Name="SettersManagerDisplayerIsEmpty" Content="Параметр не выбран" Style="{StaticResource SettersLabel}" Grid.ColumnSpan="5" Grid.Row="5"
                        Foreground="DarkRed" FontSize="15"/>
+                <Border x:Name="SettersManagerDisplayerIsChosen" Grid.ColumnSpan="5" Grid.Row="5" Visibility="Collapsed" BorderBrush="Black" BorderThickness="0,0,0,2"/>
 
                 <Border Grid.Column="2" Grid.Row="1" Grid.RowSpan="4" BorderThickness="0,0,2,0" BorderBrush="Black"/>
                 <Border Grid.Column="2" Grid.Row="6" BorderThickness="0,0,2,0" BorderBrush="Black"/>

@@ -16,18 +16,17 @@ using System.Windows.Shapes;
 namespace MainWindow.SettersUserControls
 {
     /// <summary>
-    /// Interaction logic for daysBeforeRecordingAgingUC.xaml
+    /// Interaction logic for BasketLimitUC.xaml
     /// </summary>
-    public partial class daysBeforeRecordingAgingUC : UserControl
+    public partial class BasketLimitUC : UserControl
     {
         public event Action<uint> GetValue;
-        public daysBeforeRecordingAgingUC(string value)
+        public BasketLimitUC(string value)
         {
             InitializeComponent();
             ValueDisplayer.Text = value;
         }
-
-        private void ValueDisplayer_TextChanged(object sender, TextChangedEventArgs e)
+        public void ValueDisplayer_TextChanged(object sender, TextChangedEventArgs e)
         {
             string str = "";
             try

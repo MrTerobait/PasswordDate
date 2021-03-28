@@ -64,6 +64,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -84,14 +85,37 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FileIOServices.cs" />
+    <Compile Include="SettersUserControls\IsRemoveCapitalLettersUC.xaml.cs">
+      <DependentUpon>IsRemoveCapitalLettersUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettersUserControls\IsRemoveSignsUC.xaml.cs">
+      <DependentUpon>IsRemoveSignsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PasswordGeneratorDisplayer.xaml.cs">
       <DependentUpon>PasswordGeneratorDisplayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Recording.cs" />
     <Compile Include="Setters.cs" />
+    <Compile Include="SettersUserControls\basketLimitUC.xaml.cs">
+      <DependentUpon>basketLimitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SettersUserControls\daysBeforeRecordingAgingUC.xaml.cs">
       <DependentUpon>daysBeforeRecordingAgingUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SettersUserControls\MailUC.xaml.cs">
+      <DependentUpon>MailUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettersUserControls\passwordGeneratorDefaultSymbolsAmountUC.xaml.cs">
+      <DependentUpon>passwordGeneratorDefaultSymbolsAmountUC.xaml</DependentUpon>
+    </Compile>
+    <Page Include="SettersUserControls\IsRemoveCapitalLettersUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettersUserControls\IsRemoveSignsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -108,7 +132,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SettersUserControls\basketLimitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SettersUserControls\daysBeforeRecordingAgingUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettersUserControls\MailUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettersUserControls\passwordGeneratorDefaultSymbolsAmountUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

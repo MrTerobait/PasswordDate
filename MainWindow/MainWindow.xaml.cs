@@ -382,6 +382,13 @@ namespace MainWindow
             }
             recordingList.Add(recording);
         }
+        private void DeleteOutOfBasketLimitRecording()
+        {
+            while (basket.Count > setters.BasketLimit)
+            {
+                basket.RemoveAt(basket.Count - 1);
+            }
+        }
 
         private void OpenNewRecordingEditor()
         {
@@ -663,21 +670,43 @@ namespace MainWindow
         }
 
 
-        private ButtonConditions SettersButtonCondition = ButtonConditions.Opening;
+        private ButtonConditions SettersButtonCondition = ButtonConditions.Opening;       
         private void SettersButton_Click(object sender, RoutedEventArgs e)
         {
             if (SettersButtonCondition == ButtonConditions.Opening)
             {
+                if (IsRecordingEditorDisplayerOpen)
+                {
+                    CloseRecordingEditorDisplayer();
+                }
+                SetValuesInSettersDisplayer();
                 MainWindowDisplayer.IsHitTestVisible = false;
                 MainWindowDisplayer.Effect = new BlurEffect();
                 SettersDisplayer.Visibility = Visibility.Visible;
+                setters.editorSetterIsClosed += CloseSetter;
             }
             else if(SettersButtonCondition == ButtonConditions.Closing)
             {
                 MainWindowDisplayer.IsHitTestVisible = true;
                 MainWindowDisplayer.Effect = null;
                 SettersDisplayer.Visibility = Visibility.Collapsed;
+                setters.editorSetterIsClosed -= CloseSetter;
+                MarkOldRecordingsInRecordingList();
+                DeleteOutOfBasketLimitRecording();
+                if (currentDisplayingList == CurrentDisplayingListTypes.Basket)
+                {
+                    if (basket.Count > 0)
+                    {
+                        SetRecordingButtons();
+                    }
+                    else
+                    {
+                        ToggleCurrentDisplayingList(null, null);
+                    }
+                }
             }
+            SettersManagerDisplayerIsEmpty.Visibility = Visibility.Visible;
+            SettersManagerDisplayerIsChosen.Visibility = Visibility.Collapsed;
             ChangeButtonCondition(ref SettersButtonCondition);
         }
         private void SetterButton_MouseOver(object sender, RoutedEventArgs e)
@@ -698,11 +727,98 @@ namespace MainWindow
         {
             var setterControl = sender as Label;
             var setter = DefineSenderFromSetters(setterControl);
-            var editorSetter = setters.OpenEditorSetter((string)setter[0].Content);
-            Grid.SetRow(editorSetter, 5);
-            Grid.SetColumnSpan(editorSetter, 5);
-            SettersContentDisplayer.Children.Remove(SettersManagerDisplayerIsEmpty);
-            SettersContentDisplayer.Children.Add(editorSetter);
+            SettersManagerDisplayerIsChosen.Child = setters.OpenEditorSetter((string)setter[0].Content);
+            SettersManagerDisplayerIsChosen.Visibility = Visibility.Visible;
+            SettersManagerDisplayerIsEmpty.Visibility = Visibility.Collapsed;
+            setters.editorSetterIsClosed += CloseSetter;
+
+        }
+        private void ResetSettersButton_Click(object sender, RoutedEventArgs e)
+        {
+            setters = Setters.ResetSetters();
+            SetValuesInSettersDisplayer();
+            SettersManagerDisplayerIsChosen.Visibility = Visibility.Collapsed;
+            SettersManagerDisplayerIsEmpty.Visibility = Visibility.Visible;
+        }
+        private void SetValuesInSettersDisplayer()
+        {
+            var nounType = GetTypeNounToNumber(setters.DaysBeforeRecordingAging);
+            if (nounType == "singular")
+            {
+                daysBeforeRecordingAgingDisplayer1.Content = $"{setters.DaysBeforeRecordingAging} день";
+            }
+            else if(nounType == "plural")
+            {
+                daysBeforeRecordingAgingDisplayer1.Content = $"{setters.DaysBeforeRecordingAging} дней";
+            }
+            else
+            {
+                daysBeforeRecordingAgingDisplayer1.Content = $"{setters.DaysBeforeRecordingAging} дня";
+            }
+            nounType = GetTypeNounToNumber(setters.BasketLimit);
+            if (nounType == "singular")
+            {
+                basketLimitDisplayer1.Content = $"{setters.BasketLimit} запись";
+            }
+            else if (nounType == "plural")
+            {
+                basketLimitDisplayer1.Content = $"{setters.BasketLimit} записей";
+            }
+            else
+            {
+                basketLimitDisplayer1.Content = $"{setters.BasketLimit} записи";
+            }
+            if (setters.Mail != "")
+            {
+                mailDisplayer1.Content = "Указана";
+            }
+            else
+            {
+                mailDisplayer1.Content = "Не указана";
+            }
+            passwordGeneratorDefaultSymbolsAmountDisplayer1.Content = setters.PasswordGeneratorParams[0];
+            if ((bool)setters.PasswordGeneratorParams[1] == false)
+            {
+                isRemoveCapitalLettersDisplayer1.Content = "нет";
+            }
+            else
+            {
+                isRemoveCapitalLettersDisplayer1.Content = "да";
+            }
+            if ((bool)setters.PasswordGeneratorParams[2] == false)
+            {
+                isRemoveSignsDisplayer1.Content = "нет";
+            }
+            else
+            {
+                isRemoveSignsDisplayer1.Content = "да";
+            }
+        }
+        private string GetTypeNounToNumber(int number)
+        {
+            if (number > 9 && number < 20)
+            {
+                return "plural";
+            }
+            number = number % 10;
+            if (number == 0 || number > 4)
+            {
+                return "plural";
+            }
+            else if(number == 1)
+            {
+                return "singular";
+            }
+            else
+            {
+                return "indirect declination";
+            }
+        }
+        private void CloseSetter()
+        {
+            SettersManagerDisplayerIsChosen.Visibility = Visibility.Collapsed;
+            SettersManagerDisplayerIsEmpty.Visibility = Visibility.Visible;
+            SetValuesInSettersDisplayer();
         }
 
         private Label[] DefineSenderFromSetters(Label sender)

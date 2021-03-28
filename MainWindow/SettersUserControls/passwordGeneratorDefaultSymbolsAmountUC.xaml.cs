@@ -1,27 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MainWindow.SettersUserControls
 {
     /// <summary>
-    /// Interaction logic for daysBeforeRecordingAgingUC.xaml
+    /// Interaction logic for passwordGeneratorDefaultSymbolsAmountUC.xaml
     /// </summary>
-    public partial class daysBeforeRecordingAgingUC : UserControl
+    public partial class passwordGeneratorDefaultSymbolsAmountUC : UserControl
     {
         public event Action<uint> GetValue;
-        public daysBeforeRecordingAgingUC(string value)
+        public passwordGeneratorDefaultSymbolsAmountUC(string value)
         {
             InitializeComponent();
             ValueDisplayer.Text = value;
@@ -44,6 +33,10 @@ namespace MainWindow.SettersUserControls
                     }
                 }
                 ValueDisplayer.Text = str;
+            }
+            if (ValueDisplayer.Text != "" && uint.Parse(ValueDisplayer.Text) > 50)
+            {
+                ValueDisplayer.Text = "50";
             }
         }
         private void ChangeValueButton_Click(object sender, RoutedEventArgs e)

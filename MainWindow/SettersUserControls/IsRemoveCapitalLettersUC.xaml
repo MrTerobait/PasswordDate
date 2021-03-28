@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MainWindow.SettersUserControls.daysBeforeRecordingAgingUC"
+﻿<UserControl x:Class="MainWindow.SettersUserControls.IsRemoveCapitalLettersUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -17,11 +17,14 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="Static"/>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <TextBox x:Name="ValueDisplayer" TextChanged="ValueDisplayer_TextChanged" Width="450" BorderThickness="0" Background="White" 
-                 VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" Foreground="Black" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"/>
-        <Label Width="150" Background="Gray" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-               BorderThickness="0" Content="Изменить" FontWeight="Bold" FontSize="15" MouseDown="ChangeValueButton_Click"/>
+        <Label Width="195" Background="Gray" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+               BorderThickness="0" Content="Да" FontWeight="Bold" FontSize="15" MouseDown="YesButton_Click"/>
+        <Label Width="210" Background="Gray" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+               BorderThickness="2,0,2,0" Content="Убрать заглавные буквы?" FontWeight="Bold" FontSize="15" Style="{StaticResource Static}"/>
+        <Label Width="195" Background="Gray" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+               BorderThickness="0" Content="Нет" FontWeight="Bold" FontSize="15" MouseDown="NoButton_Click"/>
     </StackPanel>
 </UserControl>

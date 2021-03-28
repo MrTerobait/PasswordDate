@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 namespace MainWindow
 {
@@ -22,6 +23,7 @@ namespace MainWindow
     /// </summary>
     public partial class DataWindow : Window
     {
+        private bool isRecordingListChanged = false;
         private readonly string recordingListPath = $"{Environment.CurrentDirectory}\\recordingList.json";
         private readonly string basketPath = $"{Environment.CurrentDirectory}\\basket.json";
         private Setters setters;
@@ -51,12 +53,18 @@ namespace MainWindow
                 Close();
             }
             RecordingsDisplayer.ItemsSource = recordingList;
+            recordingList.ListChanged += IsRecordingListChanged;
             SetRecordingButtons();
             MarkOldRecordingsInRecordingList();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             passwordGenerator?.Close();
+            if (isRecordingListChanged)
+            {
+                MessageBox.Show("Отправить данные на почту?", "Данные были изменены", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            }
         }
         private void SaveRecordingsInFile()
         {
@@ -82,6 +90,11 @@ namespace MainWindow
                     RecordingsDisplayer.SelectedCells.Add(RecordingsDisplayer.CurrentCell);
                 }
             }
+        }
+        private void IsRecordingListChanged(object sender, ListChangedEventArgs e)
+        {
+            isRecordingListChanged = true;
+            recordingList.ListChanged -= IsRecordingListChanged;
         }
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
@@ -655,13 +668,70 @@ namespace MainWindow
         {
             if (SettersButtonCondition == ButtonConditions.Opening)
             {
-
+                MainWindowDisplayer.IsHitTestVisible = false;
+                MainWindowDisplayer.Effect = new BlurEffect();
+                SettersDisplayer.Visibility = Visibility.Visible;
             }
             else if(SettersButtonCondition == ButtonConditions.Closing)
             {
-
+                MainWindowDisplayer.IsHitTestVisible = true;
+                MainWindowDisplayer.Effect = null;
+                SettersDisplayer.Visibility = Visibility.Collapsed;
             }
             ChangeButtonCondition(ref SettersButtonCondition);
+        }
+        private void SetterButton_MouseOver(object sender, RoutedEventArgs e)
+        {
+            var setterControl = sender as Label;
+            var setter =  DefineSenderFromSetters(setterControl);
+            setter[0].Foreground = Brushes.Red;
+            setter[1].Foreground = Brushes.Red;
+        }
+        private void SetterButton_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            var setterControl = sender as Label;
+            var setter = DefineSenderFromSetters(setterControl);
+            setter[0].Foreground = Brushes.Black;
+            setter[1].Foreground = Brushes.Black;
+        }
+        private void SetterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var setterControl = sender as Label;
+            var setter = DefineSenderFromSetters(setterControl);
+            var editorSetter = setters.OpenEditorSetter((string)setter[0].Content);
+            Grid.SetRow(editorSetter, 5);
+            Grid.SetColumnSpan(editorSetter, 5);
+            SettersContentDisplayer.Children.Remove(SettersManagerDisplayerIsEmpty);
+            SettersContentDisplayer.Children.Add(editorSetter);
+        }
+
+        private Label[] DefineSenderFromSetters(Label sender)
+        {
+            if (sender == daysBeforeRecordingAgingDisplayer0 || sender == daysBeforeRecordingAgingDisplayer1)
+            {
+                return new Label[] { daysBeforeRecordingAgingDisplayer0, daysBeforeRecordingAgingDisplayer1 };
+            }
+            else if (sender == basketLimitDisplayer0 || sender == basketLimitDisplayer1)
+            {
+                return new Label[] { basketLimitDisplayer0, basketLimitDisplayer1 };
+            }
+            else if (sender == mailDisplayer0 || sender == mailDisplayer1)
+            {
+                return new Label[] { mailDisplayer0, mailDisplayer1 };
+            }
+            else if (sender == passwordGeneratorDefaultSymbolsAmountDisplayer0 || sender == passwordGeneratorDefaultSymbolsAmountDisplayer1)
+            {
+                return new Label[] { passwordGeneratorDefaultSymbolsAmountDisplayer0, passwordGeneratorDefaultSymbolsAmountDisplayer1 };
+            }
+            else if (sender == isRemoveCapitalLettersDisplayer0 || sender == isRemoveCapitalLettersDisplayer1)
+            {
+                return new Label[] { isRemoveCapitalLettersDisplayer0, isRemoveCapitalLettersDisplayer1 };
+            }
+            else if(sender == isRemoveSignsDisplayer0 || sender == isRemoveSignsDisplayer1)
+            {
+                return new Label[] { isRemoveSignsDisplayer0, isRemoveSignsDisplayer1 };
+            }
+            throw new Exception();
         }
 
         private void ChangeButtonCondition(ref ButtonConditions button)

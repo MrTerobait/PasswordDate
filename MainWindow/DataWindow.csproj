@@ -89,6 +89,9 @@
     </Compile>
     <Compile Include="Recording.cs" />
     <Compile Include="Setters.cs" />
+    <Compile Include="SettersUserControls\daysBeforeRecordingAgingUC.xaml.cs">
+      <DependentUpon>daysBeforeRecordingAgingUC.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -102,6 +105,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PasswordGeneratorDisplayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettersUserControls\daysBeforeRecordingAgingUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

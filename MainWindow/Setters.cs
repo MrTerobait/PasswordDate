@@ -3,35 +3,38 @@ using System.Collections;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using MainWindow.SettersUserControls;
 
 namespace MainWindow
 {
     public class Setters
     {
-        private int _daysBeforeRecordingAging = 30;
-        private int _basketLimit = 30;
-        private int _passwordGeneratorDefaultSymbolsAmount = 10;
-        private bool _isRemoveCapitalLetters = false;
-        private bool _isRemoveSigns = false;
+        private string _daysBeforeRecordingAging = "30";
+        private string _basketLimit = "30";
+        private string _mail = "";
+        private string _passwordGeneratorDefaultSymbolsAmount = "10";
+        private string _isRemoveCapitalLetters = "0";
+        private string _isRemoveSigns = "0";
         public int DaysBeforeRecordingAging
         {
             get
             {
-                return  _daysBeforeRecordingAging;
+                return  int.Parse(_daysBeforeRecordingAging);
             }
         }
         public int BasketLimit
         {
             get
             {
-                return _basketLimit;
+                return int.Parse(_basketLimit);
             }
         }
         public ArrayList PasswordGeneratorParams
         {
             get
             {
-                return new ArrayList() { _passwordGeneratorDefaultSymbolsAmount, _isRemoveCapitalLetters, _isRemoveSigns };
+                return new ArrayList() { int.Parse(_passwordGeneratorDefaultSymbolsAmount), bool.Parse(_isRemoveCapitalLetters), bool.Parse(_isRemoveSigns) };
             }
         }
         private readonly string settersParametersPath = $"{Environment.CurrentDirectory}\\setters_param.txt";
@@ -42,11 +45,12 @@ namespace MainWindow
                 try
                 {
                     string[] settersInfo = File.ReadAllLines(settersParametersPath);
-                    _daysBeforeRecordingAging = int.Parse(settersInfo[0]);
-                    _basketLimit = int.Parse(settersInfo[1]);
-                    _passwordGeneratorDefaultSymbolsAmount = int.Parse(settersInfo[2]);
-                    _isRemoveCapitalLetters = bool.Parse(settersInfo[3]);
-                    _isRemoveSigns = bool.Parse(settersInfo[4]);
+                    _daysBeforeRecordingAging = settersInfo[0];
+                    _basketLimit = settersInfo[1];
+                    _mail = settersInfo[2];
+                    _passwordGeneratorDefaultSymbolsAmount = settersInfo[3];
+                    _isRemoveCapitalLetters = settersInfo[4];
+                    _isRemoveSigns = settersInfo[5];
                 }
                 catch (Exception)
                 {
@@ -57,37 +61,25 @@ namespace MainWindow
             {
                 File.CreateText(settersParametersPath).Dispose();
             }
-            Change();
         }
         ~Setters()
         {
-            File.WriteAllLines(settersParametersPath, new string[] { $"{_daysBeforeRecordingAging}", $"{_basketLimit}", $"{_passwordGeneratorDefaultSymbolsAmount}",
-                    $"{_isRemoveCapitalLetters}", $"{_isRemoveSigns}"});
+            File.WriteAllLines(settersParametersPath, new string[] { _daysBeforeRecordingAging, _basketLimit, _mail, _passwordGeneratorDefaultSymbolsAmount,
+                    "false", "false" } );
         }
-        Random random = new Random();
-        public void Change()
-        {
-            _daysBeforeRecordingAging = 1;
-            _basketLimit = 3;
-            _passwordGeneratorDefaultSymbolsAmount = random.Next(0, 50);
-            if (random.Next(0, 2) == 0)
-            {
-                _isRemoveCapitalLetters = true;
-                _isRemoveSigns = true;
-            }
-            else
-            {
-                _isRemoveCapitalLetters = false;
-                _isRemoveSigns = false;
-            }
-        }
-        public static class Editor
-        {
-            public static Grid body = new Grid();
-            static Editor()
-            {
 
+        private Border editorSetter;
+        private string setterValue;
+        public Border OpenEditorSetter(string setter)
+        {
+            editorSetter = new Border() { BorderThickness = new Thickness(0, 0, 0, 2), BorderBrush = Brushes.Black };
+            editorSetter.Child = new daysBeforeRecordingAgingUC(_daysBeforeRecordingAging);
+            if (setter == "Время старения записи")
+            {
+                return editorSetter;
             }
+            throw new Exception();
         }
+
     }
 }

@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace MainWindow
 {
-    public class FileIOServices
+    public class RecordingsDataIO
     {
         private readonly string _pathToRecordingList;
         private readonly string _pathToBasket;
-        public FileIOServices(string pathToRecordingList, string pathToBasket)
+        public RecordingsDataIO(string pathToRecordingList, string pathToBasket)
         {
             _pathToRecordingList = pathToRecordingList;
             _pathToBasket = pathToBasket;
@@ -57,6 +57,27 @@ namespace MainWindow
             {
                 string output = JsonConvert.SerializeObject(basket);
                 writer.Write(output);
+            }
+        }
+        public void CreateRecordingListFileInTXT(string path)
+        {
+            var data = LoadDataForRecordingList();
+            var content = "";
+            for (int i = 0; i < data.Count; i++)
+            {
+                content += $"{i + 1}.";
+                content += "     ";
+                content += data[i].CreationDate;
+                content += "     ";
+                content += data[i].Name;
+                content += "     ";
+                content += data[i].Password;
+                content += "\n";
+                content += "\n";
+            }
+            using(StreamWriter writer = File.CreateText(path))
+            {
+                writer.Write(content);
             }
         }
     }

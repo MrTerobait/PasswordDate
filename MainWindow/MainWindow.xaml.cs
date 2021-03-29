@@ -5,6 +5,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Net;
+using System.Net.Mail;
 
 namespace MainWindow
 {
@@ -23,11 +25,10 @@ namespace MainWindow
     /// </summary>
     public partial class DataWindow : Window
     {
-        private bool isRecordingListChanged = false;
         private readonly string recordingListPath = $"{Environment.CurrentDirectory}\\recordingList.json";
         private readonly string basketPath = $"{Environment.CurrentDirectory}\\basket.json";
         private Setters setters;
-        private FileIOServices fileIOServices;
+        private RecordingsDataIO fileIOServices;
         private BindingList<Recording> recordingList = new BindingList<Recording>();
         private BindingList<Recording> basket = new BindingList<Recording>();
         private RecordingEditor recordingEditor;
@@ -41,7 +42,7 @@ namespace MainWindow
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             setters = new Setters();
-            fileIOServices = new FileIOServices(recordingListPath, basketPath);
+            fileIOServices = new RecordingsDataIO(recordingListPath, basketPath);
             try
             {
                 basket = fileIOServices.LoadDataForBasket();
@@ -53,17 +54,32 @@ namespace MainWindow
                 Close();
             }
             RecordingsDisplayer.ItemsSource = recordingList;
-            recordingList.ListChanged += IsRecordingListChanged;
             SetRecordingButtons();
             MarkOldRecordingsInRecordingList();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             passwordGenerator?.Close();
-            if (isRecordingListChanged)
+            if (MessageBox.Show("Отправить пароли на почту?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                MessageBox.Show("Отправить данные на почту?", "Данные были изменены", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
+                if (setters.Mail == "")
+                {
+                    MessageBox.Show("Почта не указана!\nВам нужно перезайти в программу\nи указать почту в настройках!");
+                }
+                else
+                {
+                    MailAddress From = new MailAddress("passworddata.sender@mail.ru");
+                    MailAddress To = new MailAddress(setters.Mail);
+                    MailMessage msg = new MailMessage(From, To);
+                    msg.Subject = "Список ваших паролей";
+                    string attachmentFile = $"{Environment.CurrentDirectory}\\recordingList.txt";
+                    fileIOServices.CreateRecordingListFileInTXT(attachmentFile);
+                    msg.Attachments.Add(new Attachment(attachmentFile));
+                    SmtpClient smtp = new SmtpClient("smpt.mail.ru", 25);
+                    smtp.Credentials = new NetworkCredential("passworddata.sender@mail.ru", "a3ARkyyYA3r*");
+                    smtp.EnableSsl = true;
+                    smtp.Send(msg);
+                }
             }
         }
         private void SaveRecordingsInFile()
@@ -90,11 +106,6 @@ namespace MainWindow
                     RecordingsDisplayer.SelectedCells.Add(RecordingsDisplayer.CurrentCell);
                 }
             }
-        }
-        private void IsRecordingListChanged(object sender, ListChangedEventArgs e)
-        {
-            isRecordingListChanged = true;
-            recordingList.ListChanged -= IsRecordingListChanged;
         }
 
         private void MainButton_Click(object sender, RoutedEventArgs e)

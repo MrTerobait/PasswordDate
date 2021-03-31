@@ -23,7 +23,10 @@ namespace MainWindow
             var recordingListFile = File.Exists(_pathToRecordingList);
             if (!recordingListFile)
             {
-                File.CreateText(_pathToRecordingList).Dispose();
+                using (var writer = File.CreateText(_pathToRecordingList))
+                {
+                    writer.Write("[]");
+                }
                 return new BindingList<Recording>();
             }
             using (var reader = File.OpenText(_pathToRecordingList))
@@ -37,7 +40,10 @@ namespace MainWindow
             var recordingListFile = File.Exists(_pathToBasket);
             if (!recordingListFile)
             {
-                File.CreateText(_pathToBasket).Dispose();
+                using (var writer = File.CreateText(_pathToRecordingList))
+                {
+                    writer.Write("[]");
+                }
                 return new BindingList<Recording>();
             }
             using (var reader = File.OpenText(_pathToBasket))
@@ -75,7 +81,7 @@ namespace MainWindow
                 content += "\n";
                 content += "\n";
             }
-            using(StreamWriter writer = File.CreateText(path))
+            using (StreamWriter writer = new StreamWriter(path))
             {
                 writer.Write(content);
             }

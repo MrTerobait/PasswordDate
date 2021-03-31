@@ -60,6 +60,10 @@ namespace MainWindow
         private void Window_Closed(object sender, EventArgs e)
         {
             passwordGenerator?.Close();
+            if (recordingList.Count == 0)
+            {
+                return;
+            }
             if (MessageBox.Show("Отправить пароли на почту?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 if (setters.Mail == "")
@@ -68,7 +72,7 @@ namespace MainWindow
                 }
                 else
                 {
-                    MailAddress From = new MailAddress("passworddata.sender@mail.ru");
+                    MailAddress From = new MailAddress("otpravitelparoley@mail.ru");
                     MailAddress To = new MailAddress(setters.Mail);
                     MailMessage msg = new MailMessage(From, To);
                     msg.Subject = "Список ваших паролей";
@@ -76,7 +80,7 @@ namespace MainWindow
                     fileIOServices.CreateRecordingListFileInTXT(attachmentFile);
                     msg.Attachments.Add(new Attachment(attachmentFile));
                     SmtpClient smtp = new SmtpClient("smpt.mail.ru", 25);
-                    smtp.Credentials = new NetworkCredential("passworddata.sender@mail.ru", "a3ARkyyYA3r*");
+                    smtp.Credentials = new NetworkCredential("otpravitelparoley@mail.ru", "65+C1J0$h!");
                     smtp.EnableSsl = true;
                     smtp.Send(msg);
                 }

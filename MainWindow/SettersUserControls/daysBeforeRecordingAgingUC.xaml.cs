@@ -32,7 +32,14 @@ namespace MainWindow.SettersUserControls
             string str = "";
             try
             {
-                uint value = uint.Parse(ValueDisplayer.Text);
+                if (ValueDisplayer.Text.Length < 9)
+                {
+                    uint value = uint.Parse(ValueDisplayer.Text);
+                }
+                else
+                {
+                    ValueDisplayer.Text = ValueDisplayer.Text.Substring(0, 9);
+                }
             }
             catch
             {

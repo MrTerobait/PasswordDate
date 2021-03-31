@@ -28,13 +28,20 @@ namespace MainWindow.SettersUserControls
         }
         public void ValueDisplayer_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string str = "";
             try
             {
-                uint value = uint.Parse(ValueDisplayer.Text);
+                if (ValueDisplayer.Text.Length < 9)
+                {
+                    uint value = uint.Parse(ValueDisplayer.Text);
+                }
+                else
+                {
+                    ValueDisplayer.Text = ValueDisplayer.Text.Substring(0, 9);
+                }
             }
             catch
             {
+                string str = "";
                 for (int i = 0; i < ValueDisplayer.Text.Length; i++)
                 {
                     if (ValueDisplayer.Text[i] >= 48 && ValueDisplayer.Text[i] <= 57)

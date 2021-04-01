@@ -28,7 +28,7 @@ namespace MainWindow
         private readonly string recordingListPath = $"{Environment.CurrentDirectory}\\recordingList.json";
         private readonly string basketPath = $"{Environment.CurrentDirectory}\\basket.json";
         private Setters setters;
-        private RecordingsDataIO fileIOServices;
+        private RecordingsDataIO recordingsDataIO;
         private BindingList<Recording> recordingList = new BindingList<Recording>();
         private BindingList<Recording> basket = new BindingList<Recording>();
         private RecordingEditor recordingEditor;
@@ -42,11 +42,15 @@ namespace MainWindow
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             setters = new Setters();
-            fileIOServices = new RecordingsDataIO(recordingListPath, basketPath);
+            recordingsDataIO = new RecordingsDataIO(recordingListPath, basketPath);
+            if (!recordingsDataIO.IsFilesExist())
+            {
+                LaunchInFirstLoad();
+            }
             try
             {
-                basket = fileIOServices.LoadDataForBasket();
-                recordingList = fileIOServices.LoadDataForRecordingList();
+                basket = recordingsDataIO.LoadDataForBasket();
+                recordingList = recordingsDataIO.LoadDataForRecordingList();
             }
             catch (Exception ex)
             {
@@ -56,6 +60,13 @@ namespace MainWindow
             RecordingsDisplayer.ItemsSource = recordingList;
             SetRecordingButtons();
             MarkOldRecordingsInRecordingList();
+        }
+        private void LaunchInFirstLoad()
+        {
+            recordingsDataIO.SetFiles();
+            MainWindowDisplayer.IsHitTestVisible = false;
+            MainWindowDisplayer.Effect = new BlurEffect();
+            
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -77,7 +88,7 @@ namespace MainWindow
                     MailMessage msg = new MailMessage(From, To);
                     msg.Subject = "Список ваших паролей";
                     string attachmentFile = $"{Environment.CurrentDirectory}\\recordingList.txt";
-                    fileIOServices.CreateRecordingListFileInTXT(attachmentFile);
+                    recordingsDataIO.CreateRecordingListFileInTXT(attachmentFile);
                     msg.Attachments.Add(new Attachment(attachmentFile));
                     SmtpClient smtp = new SmtpClient("smpt.mail.ru", 25);
                     smtp.Credentials = new NetworkCredential("otpravitelparoley@mail.ru", "65+C1J0$h!");
@@ -90,7 +101,7 @@ namespace MainWindow
         {
             try
             {
-                fileIOServices.SaveData(recordingList, basket);
+                recordingsDataIO.SaveData(recordingList, basket);
             }
             catch(Exception ex)
             {
@@ -708,16 +719,10 @@ namespace MainWindow
                 setters.editorSetterIsClosed -= CloseSetter;
                 MarkOldRecordingsInRecordingList();
                 DeleteOutOfBasketLimitRecording();
-                if (currentDisplayingList == CurrentDisplayingListTypes.Basket)
+                SetRecordingButtons();
+                if (currentDisplayingList == CurrentDisplayingListTypes.Basket && basket.Count == 0)
                 {
-                    if (basket.Count > 0)
-                    {
-                        SetRecordingButtons();
-                    }
-                    else
-                    {
-                        ToggleCurrentDisplayingList(null, null);
-                    }
+                    ToggleCurrentDisplayingList(null, null);
                 }
             }
             SettersManagerDisplayerIsEmpty.Visibility = Visibility.Visible;
@@ -750,7 +755,7 @@ namespace MainWindow
         }
         private void ResetSettersButton_Click(object sender, RoutedEventArgs e)
         {
-            setters = Setters.ResetSetters();
+            setters = setters.ResetSetters();
             SetValuesInSettersDisplayer();
             SettersManagerDisplayerIsChosen.Visibility = Visibility.Collapsed;
             SettersManagerDisplayerIsEmpty.Visibility = Visibility.Visible;

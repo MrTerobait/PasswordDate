@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MainWindow
 {
@@ -15,6 +16,7 @@ namespace MainWindow
             AmountSymbolsSlider.Value = amountSymbols;
             IsRemoveCapitalLettersCheckBox.IsChecked = isRemoveCapitalLetters;
             IsRemoveSignsCheckBox.IsChecked = isRemoveSigns;
+            PasswordField.TextChanged += PasswordField_TextChanged;
         }
 
         private void PasswordGeneratorButton_Click(object sender, RoutedEventArgs e)
@@ -81,6 +83,20 @@ namespace MainWindow
                 }
                 return symbol;
             }
+        }
+
+        private void CopyPasswordLabel_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(PasswordField.Text);
+            CopyPasswordLabel.Content = "Скопировано";
+            CopyPasswordLabel.Foreground = Brushes.LightGreen;
+        }
+
+        private void PasswordField_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            CopyPasswordLabel.Content = "Скопировать";
+            CopyPasswordLabel.Foreground = Brushes.DarkRed;
+            CopyPasswordLabel.FontWeight = FontWeights.Bold;
         }
     }
 }

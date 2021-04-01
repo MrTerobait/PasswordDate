@@ -14,15 +14,6 @@ namespace MainWindow
         }
         public BindingList<Recording> LoadDataForRecordingList()
         {
-            var recordingListFile = File.Exists(_pathToRecordingList);
-            if (!recordingListFile)
-            {
-                using (var writer = File.CreateText(_pathToRecordingList))
-                {
-                    writer.Write("[]");
-                }
-                return new BindingList<Recording>();
-            }
             using (var reader = File.OpenText(_pathToRecordingList))
             {
                 var fileText = reader.ReadToEnd();
@@ -31,15 +22,6 @@ namespace MainWindow
         }
         public BindingList<Recording> LoadDataForBasket()
         {
-            var recordingListFile = File.Exists(_pathToBasket);
-            if (!recordingListFile)
-            {
-                using (var writer = File.CreateText(_pathToRecordingList))
-                {
-                    writer.Write("[]");
-                }
-                return new BindingList<Recording>();
-            }
             using (var reader = File.OpenText(_pathToBasket))
             {
                 var fileText = reader.ReadToEnd();
@@ -78,6 +60,25 @@ namespace MainWindow
             using (StreamWriter writer = new StreamWriter(path))
             {
                 writer.Write(content);
+            }
+        }
+        public bool IsFilesExist()
+        {
+            if (File.Exists(_pathToBasket) && File.Exists(_pathToRecordingList))
+            {
+                return true;
+            }
+            return false;
+        }
+        public void SetFiles()
+        {
+            using (var writer = File.CreateText(_pathToRecordingList))
+            {
+                writer.Write("[]");
+            }
+            using (var writer = File.CreateText(_pathToBasket))
+            {
+                writer.Write("[]");
             }
         }
     }

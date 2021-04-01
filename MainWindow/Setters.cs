@@ -43,7 +43,7 @@ namespace MainWindow
             }
         }
 
-        private static readonly string settersParametersPath = $"{Environment.CurrentDirectory}\\setters_param.txt";
+        private readonly string settersParametersPath = $"{Environment.CurrentDirectory}\\setters_param.txt";
         public Setters()
         {
             if (File.Exists(settersParametersPath))
@@ -66,7 +66,8 @@ namespace MainWindow
             File.WriteAllLines(settersParametersPath, new string[] { _daysBeforeRecordingAging, _basketLimit, _mail, _passwordGeneratorDefaultSymbolsAmount,
                     _isRemoveCapitalLetters, _isRemoveSigns } );
         }
-        public static Setters ResetSetters()
+
+        public Setters ResetSetters()
         {
             File.Delete(settersParametersPath);
             return new Setters();
